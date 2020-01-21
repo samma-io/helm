@@ -1,0 +1,47 @@
+{{ if .Values.target }}
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: artillery-loadtest-{{ .Values.target | replace "." "-" | replace "https://" "" | replace "http://" ""}}
+spec:
+  schedule: "{{ $.Values.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: artillery-loadtest
+            image: sammascanner/artillery:{{ $.Values.image.tag }}
+            env:
+              - name: TARGET
+                value: "{{ .Values.target }}"
+          restartPolicy: Never
+---
+
+
+
+
+{{ else }}
+{{- range .Values.targets }}
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: artillery-loadtest-{{ . | replace "." "-" | replace "https://" "" | replace "http://" ""}}
+spec:
+  schedule: "{{ $.Values.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: artillery-loadtest
+            image: sammascanner/artillery:{{ $.Values.image.tag }}
+            env:
+              - name: TARGET
+                value: "{{ . }}"
+          restartPolicy: Never
+---
+{{ end }}
+{{ end }}
