@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2016-02-18T18:52:05Z
+  name: logstash-conf
+data:
+  logstash.conf: |
+        # Openvas Exporter
+        # Read the json file from the openvas exporter.
+        # And send it on to next value
+        #
+
+        input {
+          file {
+            path => "/home/gvm/data/*.json"
+            type => json
+            codec => json
+            start_position => "beginning"
+            tags => [ "openvas_scan", "openvas" ]
+            mode => "read"
+            start_position => "beginning"
+
+          }
+        }
+
+
+        output {
+          if "openvas" in [tags] {
+                 elasticsearch {
+                  index => "openvas-%{+YYYY.MM.dd}"
+                  host => "elasticsearch"
+              } 
+          }
+        }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exporter-openvas-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        app: exporter-openvas-pod
+  template:
+    metadata:
+      labels:
+        app: exporter-openvas-pod 
+    spec:
+      containers:
+        - image: sammascanner/openvas-exporter
+          imagePullPolicy: Always
+          name: exporter-openvas-pod
+          env:
+            - name: GSAD_HOST
+              value: gvmd
+            - name: USERNAME
+              value: admin
+            - name:  PASSWORD
+              value: admin
+            - name:  DATA
+              value: data
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: logstash-conf
+              mountPath: /home/gvm/config/logstash.conf
+              subPath: logstash.conf
+      volumes:
+        - name: logstash-conf
+          configMap:
+            name: logstash-conf

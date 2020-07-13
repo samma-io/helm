@@ -2,28 +2,3 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-image:
-  tag: latest
-
-schedule: "01 * * * *"
-
-config: Full and fast
-#
-# Ip ore dns name of you target.
-# Every target will geta a job running
-
-# TARGETS
-# Define the full url to the target like https://samma.io/  
-# 
-# IMPORTANT your target must be proto:domain:endslash
-
-
-#If only using one target only set the target value
-target: ""
-
-#If using many targets use the targets value
-#If the target value is set then the targets values will be ignore
-
-targets:
-  - https://www.ollebo.com
-  - https://samma.io
