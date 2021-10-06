@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "1.0"
-description: Nikto Helm charts for samma.io
-name: nikto
-version: 0.1.0
