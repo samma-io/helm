@@ -1,0 +1,11 @@
+
+#Values for the Samma Security Highground
+#
+#
+# We dont ave that mutch values here :-)
+
+# Want nodeport for minkube
+nodeport: "true" # true ore false
+ 
+#Persistance storage
+storage: "false" # true ore false
