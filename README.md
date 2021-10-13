@@ -75,6 +75,24 @@ Deploy you scanners with helm settings
 helm upgrade --install samma-io --set target=samma.io nmap-samma nmap/ 
 ```
 
+## Use the scanner helm to deploy all scanners againt a target 
+
+The scanner helm is a helm that will deploy all scanners againts the target. Thsi gives you an easy way to start multipel scans easy
+
+
+```
+helm install scanner --debug --debug scanners/  -n samma-io
+
+```
+
+### To easy set the targets for all subcharts use the tpl file and envsub
+
+```
+TARGET=samma.io envsubst < values.tpl | helm install scanner --debug --debug .  -n samma-io
+
+```
+
+
 ## Settings
 
 ### Cron
@@ -83,3 +101,5 @@ All scanners have a cronjob so you can scedule your scans. Please set cron to "t
 ### Filebeat to Elastic
 By default filebeat is deployed and send log to elasticsearch (http://elasticsearch:9200). 
 Filebeat can be disabled and then result are only printed out in stout.
+
+

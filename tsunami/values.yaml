@@ -8,7 +8,7 @@ image:
 
 #deploy as crontab
 cron:
-  enable: "true" # false for no crantab true for enabling cront scans
+  enable: "false" # false for no crantab true for enabling cront scans
   schedule: "01 13 * * *"
 
 
