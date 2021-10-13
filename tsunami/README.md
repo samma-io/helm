@@ -26,7 +26,9 @@ If not then result are logs into stout.
 
 ###This will show the yaml for create and run schdule a nmap scanner against the ip 10.0.0.1 (Remove --dry-run to apply)
 ```
- helm install nmap --dry-run --debug --set target=10.0.0.1 nmap/
+ helm install tsunami --dry-run --debug --set target=samma.io tusnami/
  ```
-
+```
+ helm install tsunami --dry-run --debug --set targetIP=1.1.1.1 tusnami/
+ ```
 

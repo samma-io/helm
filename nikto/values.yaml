@@ -1,4 +1,4 @@
-# Default values for nmap.
+# Default values for nikto.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -8,27 +8,29 @@ image:
 
 #deploy as crontab
 cron:
-  enable: "true" # false for no crantab true for enabling cront scans
-  schedule: "01 * * * *"
+  enable: "false" # false for no crantab true for enabling cront scans
+  schedule: "01 13 * * *"
 
 
 
 
 #The target of the scanner. Evert target will get its own job
 #
-# nmap-tls-scanner-samma-io
+# nikto-scanner-samma-io
 target: "samma.io"
+tuning: 23
+port: 443
 
 # Samma Values
 samma:
-  scanner: nmap
+  scanner: nikto
   id: 0000
-  tags: "['scanner','base']"
+  tags: "['scanner','nikto']"
   json: '{"extra":"value"}'
   write_to_file: "true" # any other string will disable it
-  parser: nmap
+  parser: nikto
 
 #Send logs with filebeat to elasticsearch
 filebeat: "enable" # any other string will disable it enbale to enable it
-elastcisearch: http://elasticsearch:9200
+elasticsearch: http://elasticsearch:9200
 
