@@ -15,7 +15,7 @@ spec:
             {{ if .Values.targetIP }}
             args: ["--ip-v4-target={{ .Values.targetIP }}","--scan-results-local-output-format=JSON","--scan-results-local-output-filename=/out/tsunami-output.json"]
             {{else}}
-            args: ["--hostname={{ .Values.target }}","--scan-results-local-output-format=JSON","--scan-results-local-output-filename=/out/tsunami-output.json"]
+            args: ["--hostname-target={{ .Values.target }}","--scan-results-local-output-format=JSON","--scan-results-local-output-filename=/out/tsunami-output.json"]
             {{end}}
             volumeMounts:
               - mountPath: /out

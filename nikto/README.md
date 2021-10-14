@@ -26,7 +26,12 @@ If not then result are logs into stout.
 
 ###This will show the yaml for create and run schdule a nmap scanner against the ip 10.0.0.1 (Remove --dry-run to apply)
 ```
- helm install nikto --dry-run --debug --set target=10.0.0.1 nikto/
+ helm install nikto  --debug --set target=10.0.0.1 nikto/
  ```
 
 
+### Helm with --dry-run
+In the template we use lookup that looks for a value some configmaps. 
+This does not work when running i --dry-run so you will se a configmap error.
+
+Please apply the chart anyway and it will work

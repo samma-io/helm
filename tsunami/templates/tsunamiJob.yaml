@@ -1,5 +1,6 @@
 {{ if eq .Values.filebeat "enable" }} 
-{{- if (lookup "v1" "Configmap" "" "live") }}
+{{ if not (lookup "v1" "ConfigMap" .Release.Namespace "live") }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -18,7 +19,8 @@ data:
       exit 0
 {{ end }}
 ---
-{{- if (lookup "v1" "Configmap" "" "filebeat") }}
+{{ if not (lookup "v1" "ConfigMap" .Release.Namespace "filebeat") }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -75,8 +77,11 @@ spec:
       containers:
       - name: tsunami
         image: sammascanner/tsunami:{{ .Values.image.tag}}
-        args: ["--ip-v4-target={{ .Values.target }}","--scan-results-local-output-format=JSON","--scan-results-local-output-filename=/out/tsunami-output.json"]
-        #command: ["--ip-v4-target=158.174.104.17","--scan-results-local-output-format=JSON","--scan-results-local-output-filename=/out/tsunami-output.json"]
+        {{ if .Values.targetIP }}
+        args: ["--ip-v4-target={{ .Values.targetIP }}","--scan-results-local-output-format=JSON","--scan-results-local-output-filename=/out/tsunami-output.json"]
+        {{else}}
+        args: ["--hostname-target={{ .Values.target }}","--scan-results-local-output-format=JSON","--scan-results-local-output-filename=/out/tsunami-output.json"]
+        {{end}}
         volumeMounts:
           - mountPath: /out
             name: out-volume

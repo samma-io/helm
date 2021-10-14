@@ -88,10 +88,17 @@ helm install scanner --debug --debug scanners/  -n samma-io
 ### To easy set the targets for all subcharts use the tpl file and envsub
 
 ```
-TARGET=samma.io envsubst < values.tpl | helm install scanner --debug --debug .  -n samma-io
+TARGET=ollebo.com envsubst < scanners/values.tpl > values.tmp  | helm install scanner-ollebo -f values.tmp  --debug    scanners/  -n samma-io
 
 ```
+Check so the file path is correct when you run the command
 
+
+### Helm with --dry-run
+In the template we use lookup that looks for a value some configmaps. 
+This does not work when running i --dry-run so you will se a configmap error.
+
+Please apply the chart anyway and it will work
 
 ## Settings
 
