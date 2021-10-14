@@ -1,5 +1,5 @@
 {{ if eq .Values.cron.enable "true"  }}
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: nmap-port-scanner-{{ .Values.target | replace "." "-" }}
@@ -69,7 +69,7 @@ spec:
             emptyDir: {}
           restartPolicy: Never
 ---
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: nmap-http-scanner-{{ .Values.target | replace "." "-" }}
@@ -139,7 +139,7 @@ spec:
             emptyDir: {}
           restartPolicy: Never
 ---
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: nmap-tls-scanner-{{ .Values.target | replace "." "-" }}
