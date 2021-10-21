@@ -31,10 +31,11 @@ base:
   elasticsearch: http://elasticsearch:9200
 tsunami:
   target: "$TARGET"
-  #targetip: "1.1.1.1"
+  targetIP: "$TARGET"
   cron:
     enable: "true" # false for no crantab true for enabling cront scans
     schedule: "$CRON"
   #Send logs with filebeat to elasticsearch
   filebeat: "enable" # any other string will disable it enbale to enable it
   elasticsearch: http://elasticsearch:9200
+
