@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: samma-lb
+  namespace: samma-io
+spec:
+  ports:
+  - port: 5601
+    name: kibana
+    targetPort: 5601
+  - port: 3000
+    name: grafana
+    targetPort: 3000
+  - port: 8080
+    name: api
+    targetPort: 8080
+  selector:
+    sammastack: proxy
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: samma
+  namespace: samma-io
+spec:
+  ports:
+  - port: 5601
+    name: kibana
+    targetPort: 5601
+    nodePort: 30555
+  - port: 3000
+    name: grafana
+    targetPort: 3000
+    nodePort: 30556
+  - port: 8080
+    name: api
+    targetPort: 8080
+    nodePort: 30557
+  selector:
+    sammastack: proxy
+  type: NodePort
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  namespace: samma-io
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      sammastack: proxy
+  template:
+    metadata:
+      labels:
+        sammastack: proxy
+    spec:
+      containers:
+        - name: proxy-kibana
+          image: "tecnativa/tcp-proxy"
+          imagePullPolicy: Always
+          env:
+          - name: LISTEN
+            value: ":5601"
+          - name: TALK
+            value: "kibana:5601"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "300m"
+          ports:
+            - name: http
+              containerPort: 5601
+              protocol: TCP
+        - name: proxy-grafana
+          image: "tecnativa/tcp-proxy"
+          imagePullPolicy: Always
+          env:
+          - name: LISTEN
+            value: ":3000"
+          - name: TALK
+            value: "grafana:3000"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "300m"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+        - name: proxy-api
+          image: "tecnativa/tcp-proxy"
+          imagePullPolicy: Always
+          env:
+          - name: LISTEN
+            value: ":8080"
+          - name: TALK
+            value: "api:8080"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "300m"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP

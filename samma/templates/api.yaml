@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samma-api
+  namespace: samma-io
+spec:
+  selector:
+    matchLabels:
+      app: samma-api
+  template:
+    metadata:
+      labels:
+        app: samma-api
+    spec:
+      serviceAccountName: samma-operator
+      containers:
+        - image: sammascanner/api:beta
+          name: samma-api
+          imagePullPolicy: Always
+          ports:
+          - name: http
+            containerPort: 8080
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: samma-io
+spec:
+  ports:
+  - port: 8080
+    name: api
+    targetPort: 8080
+  selector:
+    app: samma-api
+  type: ClusterIP

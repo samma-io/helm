@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samma-operator
+  namespace: samma-io
+spec:
+  selector:
+    matchLabels:
+      app: samma-operator
+  template:
+    metadata:
+      labels:
+        app: samma-operator
+    spec:
+      serviceAccountName: samma-operator
+      containers:
+        - image: sammascanner/operator:beta
+          env:
+            - name: nats
+              value: {{ .Values.operator.nats }}
+            - name: SAMMA_IO_ID
+              value: "{{ .Values.samma_io.id }}"
+            - name: SAMMA_IO_TAGS
+              value: "{{ .Values.samma_io.tags }}"
+            - name: SAMMA_IO_JSON
+              value: '{{ .Values.samma_io.json }}'
+            - name: WRITE_TO_FILE
+              value: "{{ .Values.output.write_to_file }}"
+            - name: ELASTICSEARCH
+              value: {{ .Values.output.elasticsearch }}
+            - name: SAMMA_IO_SCANNER
+              value: "{{ .Values.samma_io.scanners }}"
+            - name: SAMMA_IO_KEY
+              value: "{{ .Values.samma_io.key }}"
+          name: samma-operator
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi

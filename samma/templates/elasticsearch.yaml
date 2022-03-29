@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: samma-io
+  labels:
+    sammastack: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      sammastack: elasticsearch
+  template:
+    metadata:
+      labels:
+        sammastack: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: "docker.elastic.co/elasticsearch/elasticsearch:7.15.0"
+          imagePullPolicy: Always
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: -Xms2g -Xmx2g
+            - name: xpack.security.enabled
+              value: "false"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2G"
+              cpu: "1000m"
+          ports:
+            - name: http
+              containerPort: 9200
+              protocol: TCP
+          livenessProbe:
+          readinessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: http
+#          volumeMounts:
+#            - mountPath: /usr/share/elasticsearch/data
+#              name: data
+#      volumes:
+#        - name: data
+#  Add your host datat here if you want to keep data in elastuic
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: samma-io
+spec:
+  selector:
+    sammastack: elasticsearch
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
