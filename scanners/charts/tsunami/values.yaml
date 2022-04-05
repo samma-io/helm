@@ -1,0 +1,38 @@
+# Default values for tsunami.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  tag: v0.1
+
+
+#deploy as crontab
+cron:
+  enable: "false" # false for no crantab true for enabling cront scans
+  schedule: "01 13 * * *"
+
+
+
+
+#The target of the scanner. Evert target will get its own job
+#
+# tsunami-samma-io
+
+#IMPORTANT  Defalut use the domain if you set targetIP then that values will be use 
+target: "samma.io"
+#targetIP: "1.2.3.4"   < uncomment this ore add with set to scan IP addresses
+
+
+# Samma Values
+samma:
+  scanner: tsunami
+  id: 0000
+  tags: "['scanner','tsunami']"
+  json: '{"extra":"value"}'
+  write_to_file: "true" # any other string will disable it
+  parser: tsunami
+
+#Send logs with filebeat to elasticsearch
+filebeat: "enable" # any other string will disable it enbale to enable it
+elasticsearch: http://elasticsearch:9200
+

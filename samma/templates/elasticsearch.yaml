@@ -1,3 +1,5 @@
+ {{ if eq .Values.elasticsearch.enabled }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,7 +19,7 @@ spec:
     spec:
       containers:
         - name: elasticsearch
-          image: "docker.elastic.co/elasticsearch/elasticsearch:7.15.0"
+          image: "docker.elastic.co/elasticsearch/elasticsearch:7.16.0"
           imagePullPolicy: Always
           env:
             - name: discovery.type
@@ -42,13 +44,29 @@ spec:
             httpGet:
               path: /_cluster/health
               port: http
-#          volumeMounts:
-#            - mountPath: /usr/share/elasticsearch/data
-#              name: data
-#      volumes:
-#        - name: data
-#  Add your host datat here if you want to keep data in elastuic
-
+ {{ if eq .Values.elasticsearch.volume }}              
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: elastic
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elastic
+  namespace: samma-io
+  labels:
+    app: elastic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{.Values.elasticsearch.disksize }}
+{{ end }}
 ---
 apiVersion: v1
 kind: Service
@@ -62,3 +80,4 @@ spec:
     - protocol: TCP
       port: 9200
       targetPort: 9200
+{{ end }}

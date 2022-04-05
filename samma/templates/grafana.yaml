@@ -1,3 +1,5 @@
+ {{ if eq .Values.elasticsearch.enabled }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -1436,8 +1438,10 @@ spec:
             memory: "256Mi"
             cpu: "200m"
         volumeMounts:
-          #- mountPath: /var/lib/grafana
-          #  name: grafana-storage
+{{ if eq .Values.grafaba.volume }} 
+          - mountPath: /var/lib/grafana
+            name: grafana-storage
+{{ end }}
           - mountPath: /etc/grafana/provisioning/dashboards
             name: grafana-dashbourd
             readOnly: false
@@ -1460,6 +1464,29 @@ spec:
           configMap:
               defaultMode: 420
               name: samma-dashbourd
+{{ if eq .Values.grafana.volume }} 
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-storage
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-storage
+  namespace: samma-io
+  labels:
+    app: grafana
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{.Values.grafana.disksize }}
+
+
+
+{{ end }}
 ---
 apiVersion: v1
 kind: Service
@@ -1473,3 +1500,4 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
+{{ end }}

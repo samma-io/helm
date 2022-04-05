@@ -1,0 +1,211 @@
+{{ if eq .Values.cron.enable "true"  }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: nmap-port-scanner-{{ .Values.target | replace "." "-" }}
+spec:
+  schedule: "{{ .Values.cron.schedule}}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: nmap-portscanner
+            image: sammascanner/nmap:{{ .Values.image.tag}}
+            command: ["python3","/code/nmap_portscanner.py","&","echo","'died_man_die'",">","/out/die"]
+            env:
+              - name: TARGET
+                value: "{{ .Values.target }}"
+              - name: SAMMA_IO_SCANNER
+                value: "{{ .Values.samma.scanner }}"
+              - name: SAMMA_IO_ID
+                value: "{{ .Values.samma.id }}"
+              - name: SAMMA_IO_TAGS
+                value: "{{ .Values.samma.tags }}"
+              - name: SAMMA_IO_JSON
+                value: '{{ .Values.samma.json }}'
+              - name: WRITE_TO_FILE
+                value: "{{ .Values.samma.write_to_file }}"
+              - name: PARSER
+                value: "{{ .Values.samma.parser }}"
+            volumeMounts:
+              - mountPath: /out
+                name: out-volume
+          {{ if eq .Values.filebeat "enable" }} 
+          - name: filebeat
+            image: docker.elastic.co/beats/filebeat:7.15.0
+            env:
+              - name: ELASTICSEARCH
+                value: "{{ .Values.elasticsearch }}"
+            livenessProbe:
+              exec:
+                command:
+                  - /bin/sh
+                  - '-c'
+                  - /live.sh
+              initialDelaySeconds: 10
+              periodSeconds: 5
+            volumeMounts:
+            - name: filebeat
+              mountPath: "/usr/share/filebeat/filebeat.yml"
+              subPath: "filebeat.yml"
+            - name: liveness
+              mountPath: "/live.sh"
+              subPath: "live.sh"
+            - mountPath: /out
+              name: out-volume
+          {{ end }}
+          volumes:
+          {{ if eq .Values.filebeat "enable" }} 
+          - name: filebeat
+            configMap:
+              name: filebeat
+          - name: liveness
+            configMap:
+              name: live
+              defaultMode: 0777
+          {{ end }}
+          - name: out-volume
+            emptyDir: {}
+          restartPolicy: Never
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: nmap-http-scanner-{{ .Values.target | replace "." "-" }}
+spec:
+  schedule: "{{ .Values.cron.schedule}}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: nmap-httprecon
+            image: sammascanner/nmap:{{ .Values.image.tag}}
+            command: ["python3","/code/nmap_httprecon.py"]
+            env:
+              - name: TARGET
+                value: "{{ .Values.target }}"
+              - name: SAMMA_IO_SCANNER
+                value: "{{ .Values.samma.scanner }}"
+              - name: SAMMA_IO_ID
+                value: "{{ .Values.samma.id }}"
+              - name: SAMMA_IO_TAGS
+                value: "{{ .Values.samma.tags }}"
+              - name: SAMMA_IO_JSON
+                value: '{{ .Values.samma.json }}'
+              - name: WRITE_TO_FILE
+                value: "{{ .Values.samma.write_to_file }}"
+              - name: PARSER
+                value: "{{ .Values.samma.parser }}"
+            volumeMounts:
+              - mountPath: /out
+                name: out-volume
+          {{ if eq .Values.filebeat "enable" }}
+          - name: filebeat
+            image: docker.elastic.co/beats/filebeat:7.15.0
+            env:
+              - name: ELASTICSEARCH
+                value: "{{ .Values.elasticsearch }}"
+            livenessProbe:
+              exec:
+                command:
+                  - /bin/sh
+                  - '-c'
+                  - /live.sh
+              initialDelaySeconds: 10
+              periodSeconds: 5
+            volumeMounts:
+            - name: filebeat
+              mountPath: "/usr/share/filebeat/filebeat.yml"
+              subPath: "filebeat.yml"
+            - name: liveness
+              mountPath: "/live.sh"
+              subPath: "live.sh"
+            - mountPath: /out
+              name: out-volume
+          {{ end }}
+          volumes:
+          {{ if eq .Values.filebeat "enable" }}
+          - name: filebeat
+            configMap:
+              name: filebeat
+          - name: liveness
+            configMap:
+              name: live
+              defaultMode: 0777
+          {{ end }}
+          - name: out-volume
+            emptyDir: {}
+          restartPolicy: Never
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: nmap-tls-scanner-{{ .Values.target | replace "." "-" }}
+spec:
+  schedule: "{{ .Values.cron.schedule}}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: nmap-tls
+            image: sammascanner/nmap:{{ .Values.image.tag}}
+            command: ["python3","/code/nmap_tlscipher.py"]
+            env:
+              - name: TARGET
+                value: "{{ .Values.target }}"
+              - name: SAMMA_IO_SCANNER
+                value: "{{ .Values.samma.scanner }}"
+              - name: SAMMA_IO_ID
+                value: "{{ .Values.samma.id }}"
+              - name: SAMMA_IO_TAGS
+                value: "{{ .Values.samma.tags }}"
+              - name: SAMMA_IO_JSON
+                value: '{{ .Values.samma.json }}'
+              - name: WRITE_TO_FILE
+                value: "{{ .Values.samma.write_to_file }}"
+              - name: PARSER
+                value: "{{ .Values.samma.parser }}"
+            volumeMounts:
+              - mountPath: /out
+                name: out-volume
+          {{ if eq .Values.filebeat "enable" }}
+          - name: filebeat
+            image: docker.elastic.co/beats/filebeat:7.15.0
+            env:
+              - name: ELASTICSEARCH
+                value: "{{ .Values.elasticsearch }}"
+            livenessProbe:
+              exec:
+                command:
+                  - /bin/sh
+                  - '-c'
+                  - /live.sh
+              initialDelaySeconds: 10
+              periodSeconds: 5
+            volumeMounts:
+            - name: filebeat
+              mountPath: "/usr/share/filebeat/filebeat.yml"
+              subPath: "filebeat.yml"
+            - name: liveness
+              mountPath: "/live.sh"
+              subPath: "live.sh"
+            - mountPath: /out
+              name: out-volume
+            {{ end }}
+          volumes:
+         {{ if eq .Values.filebeat "enable" }}
+          - name: filebeat
+            configMap:
+              name: filebeat
+          - name: liveness
+            configMap:
+              name: live
+              defaultMode: 0777
+          {{ end }}
+          - name: out-volume
+            emptyDir: {}
+          restartPolicy: Never
+{{ end }}

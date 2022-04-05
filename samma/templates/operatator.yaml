@@ -16,8 +16,6 @@ spec:
       containers:
         - image: sammascanner/operator:beta
           env:
-            - name: nats
-              value: {{ .Values.operator.nats }}
             - name: SAMMA_IO_ID
               value: "{{ .Values.samma_io.id }}"
             - name: SAMMA_IO_TAGS

@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+proxyaccess: false 
 
 samma_io: 
   id: 1234
@@ -23,6 +24,21 @@ output:
   elasticsearch: elasticsearch
 
 
-operator:
-  nats: nats
 
+
+
+
+#Deploy a elastic search for samma to store result in
+elasticsearch:
+    enabled: true
+    volume: true
+    disksize: 50G
+
+grafana:
+    enabled: true
+    volume: true
+    disksize: 50G
+
+kibana:
+    enabled: true
+    

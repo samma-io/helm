@@ -1,4 +1,5 @@
----
+ {{ if eq .Values.kibana.enabled }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,3 +45,4 @@ spec:
     - protocol: TCP
       port: 5601
       targetPort: 5601
+{{ end }}
