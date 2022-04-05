@@ -1,4 +1,4 @@
- {{ if eq .Values.kibana.enabled }}
+ {{ if  .Values.kibana.enabled }}
 
 apiVersion: apps/v1
 kind: Deployment

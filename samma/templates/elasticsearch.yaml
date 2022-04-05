@@ -1,4 +1,4 @@
- {{ if eq .Values.elasticsearch.enabled }}
+ {{ if .Values.elasticsearch.enabled }}
 
 apiVersion: apps/v1
 kind: Deployment
@@ -44,7 +44,7 @@ spec:
             httpGet:
               path: /_cluster/health
               port: http
- {{ if eq .Values.elasticsearch.volume }}              
+ {{ if .Values.elasticsearch.volume }}              
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: data

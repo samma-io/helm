@@ -1,4 +1,4 @@
- {{ if eq .Values.proxyaccess }}
+ {{ if .Values.proxyaccess }}
 
 
 apiVersion: v1
